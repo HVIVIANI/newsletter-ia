@@ -198,7 +198,7 @@
       .then(function (r) { if (!r.ok) throw new Error('réponse ' + r.status); return r.json(); })
       .then(function (r) {
         var etat = r && r.etat;
-        if (etat === 'ok') dire('ok', ['Confirme ton adresse e-mail : le lien vient de partir vers ', { gras: d.email }, '.']);
+        if (etat === 'ok') dire('ok', ['Confirme ton adresse e-mail.']);
         else if (etat === 'differe') dire('ok', ["C'est noté, " + d.prenom + ". L'e-mail de confirmation partira demain matin vers ", { gras: d.email }, '.']);
         else if (etat === 'deja') dire('ok', ["Tu es déjà inscrit avec l'adresse ", { gras: d.email }, '. Tu reçois la newsletter chaque matin.']);
         else if (etat === 'attente') dire('attente', ["La liste est complète pour l'instant. Ton adresse ", { gras: d.email }, " est sur liste d'attente : tu recevras un e-mail dès qu'une place se libère."]);
