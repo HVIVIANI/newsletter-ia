@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Veille IA — l'actualité de l'IA triée chaque matin, par Hugo Viviani</title>
+<meta name="description" content="Chaque matin, environ 340 articles scannés pour n'en garder que 5. Une newsletter gratuite conçue et opérée par Hugo Viviani.">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://hviviani.github.io/newsletter-ia/">
+<meta property="og:title" content="Veille IA — l'actualité de l'IA, triée chaque matin">
+<meta property="og:description" content="Environ 340 articles scannés chaque jour, 5 signaux retenus. Une newsletter gratuite conçue et opérée par Hugo Viviani.">
+<meta property="og:image" content="https://hviviani.github.io/newsletter-ia/apercu.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  /* Mêmes couleurs et mêmes polices que la newsletter */
+  :root {
+    --fond: #0a0d12; --carte: #11161d; --bord: #1e2630; --bord-fort: #2b3440; --noir: #05070a;
+    --texte: #e6edf3; --doux: #8b949e; --accent: #39d353; --alerte: #d29922; --erreur: #f85149;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    --sans: Inter, 'Segoe UI', Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--fond); }
+  body { margin: 0; background: var(--fond); color: var(--texte); font-family: var(--sans); font-size: 16px; line-height: 1.55; -webkit-text-size-adjust: 100%; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  main { max-width: 640px; margin: 0 auto; padding: 28px 20px 0; }
+  .mono { font-family: var(--mono); }
+  .doux { color: var(--doux); }
+  .vert { color: var(--accent); }
+
+  .shell { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+  h1 { font-size: 34px; line-height: 1.1; letter-spacing: -.8px; margin: 10px 0 0; font-weight: 700; }
+  h1 .curseur { color: var(--accent); animation: clignote 1.1s steps(1) infinite; }
+  @keyframes clignote { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { h1 .curseur { animation: none; } }
+  .accroche { font-size: 19px; line-height: 1.4; margin: 14px 0 0; text-wrap: balance; }
+
+  .chiffres { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 20px 0 0; }
+  .chiffre { background: var(--carte); border: 1px solid var(--bord); border-radius: 8px; padding: 13px 12px; }
+  .chiffre b { display: block; font-family: var(--mono); font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .chiffre span { display: block; font-family: var(--mono); font-size: 10px; color: var(--doux); text-transform: uppercase; letter-spacing: .8px; margin-top: 2px; }
+
+  /* Fenêtre de terminal : le bloc d'inscription */
+  .fenetre { background: var(--noir); border: 1px solid var(--bord-fort); border-radius: 8px; margin: 22px 0 0; overflow: hidden; }
+  .fenetre .barre { background: #161b22; border-bottom: 1px solid var(--bord-fort); padding: 9px 12px; font-family: var(--mono); font-size: 11px; color: var(--doux); display: flex; align-items: center; gap: 5px; }
+  .fenetre .barre i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .fenetre .barre span { margin-left: 6px; }
+  .fenetre .corps { padding: 18px 18px 20px; }
+  .commande { font-family: var(--mono); font-size: 13px; }
+  .commande + .commande { margin-top: 2px; }
+
+  form { margin: 14px 0 0; }
+  .champs { display: flex; gap: 8px; }
+  .champs + .champs { margin-top: 10px; }
+  .champ { flex: 1; min-width: 0; }
+  label { display: block; font-family: var(--mono); font-size: 12px; color: var(--doux); margin-bottom: 6px; }
+  .facultatif { color: #5c6570; }
+  input[type=email], input[type=text] { width: 100%; background: var(--carte); color: var(--texte); border: 1px solid var(--bord-fort); border-radius: 6px; padding: 12px 13px; font-family: var(--mono); font-size: 16px; }
+  input::placeholder { color: #5c6570; }
+  input:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button { width: 100%; margin-top: 10px; background: var(--accent); color: #04130a; border: 0; border-radius: 6px; padding: 13px 16px; font-family: var(--mono); font-size: 15px; font-weight: 700; cursor: pointer; }
+  button:hover { background: #4ae168; }
+  button[disabled] { opacity: .6; cursor: default; }
+  .promesse { font-family: var(--mono); font-size: 12px; color: var(--doux); margin: 10px 0 0; }
+  .piege { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .message { font-size: 15px; line-height: 1.55; margin: 14px 0 0; padding: 12px 14px; border-radius: 6px; border: 1px solid; }
+  .message.ok { background: #0f2a19; border-color: #39d35355; }
+  .message.attente { background: #2d230c; border-color: #d2992255; }
+  .message.ko { background: #33131a; border-color: #f8514955; }
+  .message b { font-family: var(--mono); font-weight: 700; overflow-wrap: anywhere; }
+  [hidden] { display: none !important; }
+
+  .note { font-family: var(--mono); font-size: 11px; line-height: 1.6; color: var(--doux); margin: 8px 0 0; }
+  .voir { font-family: var(--mono); font-size: 13px; text-align: center; margin: 18px 0 0; }
+
+  footer { max-width: 640px; margin: 28px auto 0; padding: 20px; border-top: 1px solid var(--bord); font-size: 13px; color: var(--doux); }
+  footer .auteur { color: var(--texte); margin: 0 0 10px; }
+  footer .mentions { font-size: 12px; line-height: 1.6; margin: 12px 0 0; padding-top: 12px; border-top: 1px dashed var(--bord); }
+
+  @media (max-width: 480px) {
+    main { padding: 22px 16px 0; }
+    h1 { font-size: 29px; }
+    .accroche { font-size: 17px; }
+    .champs { flex-direction: column; gap: 10px; }
+
+    .chiffres { gap: 6px; }
+    .chiffre { padding: 12px 9px; }
+    .chiffre b { font-size: 17px; }
+    .chiffre span { font-size: 9px; letter-spacing: .4px; }
+    footer { padding: 18px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <div class="shell">hugo@viviani:~$ ./veille-ia --subscribe</div>
+  <h1>VEILLE IA<span class="curseur" aria-hidden="true">_</span></h1>
+  <p class="accroche">L'actualité de l'IA, triée chaque matin.</p>
+
+  <div class="chiffres" aria-label="La veille en chiffres">
+    <div class="chiffre"><b>≈ 340</b><span>articles scannés par jour</span></div>
+    <div class="chiffre"><b>5</b><span>signaux retenus en moyenne</span></div>
+    <div class="chiffre"><b class="vert">≈ 30 min</b><span>gagnées chaque matin</span></div>
+  </div>
+  <p class="note">// moyennes des 9 dernières éditions · temps gagné : 340 titres à parcourir, environ 5 s chacun</p>
+
+  <section class="fenetre" aria-labelledby="titre-inscription">
+    <div class="barre"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span id="titre-inscription">hugo@veille-ia: ~/inscription</span></div>
+    <div class="corps">
+      <div class="commande"><span class="vert">$</span> ./inscription --veille-ia</div>
+      <div class="commande doux">&gt; gratuit · vers 8 h · désinscription en un clic</div>
+
+      <form id="formulaire" novalidate>
+        <div class="champs">
+          <div class="champ">
+            <label for="nom">nom</label>
+            <input type="text" id="nom" name="nom" autocomplete="family-name" maxlength="60" required>
+          </div>
+          <div class="champ">
+            <label for="prenom">prénom</label>
+            <input type="text" id="prenom" name="prenom" autocomplete="given-name" maxlength="40" required>
+          </div>
+        </div>
+        <div class="champs">
+          <div class="champ">
+            <label for="societe">société <span class="facultatif">(facultatif)</span></label>
+            <input type="text" id="societe" name="societe" autocomplete="organization" maxlength="80">
+          </div>
+        </div>
+        <div class="champs">
+          <div class="champ">
+            <label for="email">adresse e-mail</label>
+            <input type="email" id="email" name="email" placeholder="prenom@exemple.fr" autocomplete="email" inputmode="email" required>
+          </div>
+        </div>
+        <button type="submit" id="bouton">[ s'inscrire → ]</button>
+        <div class="piege" aria-hidden="true"><label for="site">Ne pas remplir</label><input type="text" id="site" name="site" tabindex="-1" autocomplete="off"></div>
+      </form>
+
+      <div class="message" id="msg" role="status" aria-live="polite" hidden><span class="mono" id="msg-icone"></span> <span id="msg-texte"></span></div>
+      <noscript><div class="message ko">Cette page a besoin de JavaScript pour enregistrer ton inscription.</div></noscript>
+
+      <p class="promesse">// tes informations ne servent qu'à cette newsletter</p>
+    </div>
+  </section>
+
+  <p class="voir"><a href="https://script.google.com/macros/s/AKfycbyxLePPwFfxDJ5-QJjyDaXwPcjySVV5es0WImGmHZ-5HJxALDTg72y2sVnz78-uMrmp/exec?p=digest">voir la dernière édition&nbsp;→</a></p>
+</main>
+
+<footer>
+  <p class="auteur">Conçu et opéré par <b>Hugo Viviani</b>, business developer en quête du meilleur job. <a class="mono" style="font-size:12px" href="https://www.linkedin.com/in/hugo-viviani-a4b298228/">LinkedIn ↗</a></p>
+  <p class="mentions">Ton nom, ton prénom, ta société et ton adresse e-mail sont conservés par Hugo Viviani dans un fichier privé, pour t'envoyer cette newsletter et savoir qui la lit. Ils ne sont transmis à personne. Tu peux te désinscrire à tout moment avec le lien présent en bas de chaque e-mail, ou demander leur suppression par message LinkedIn.</p>
+</footer>
+
+<script>
+// Envoi du formulaire au script Google Apps Script, qui tient la liste des abonnés dans un Google Sheet privé.
+// Rien n'est stocké ici : cette page ne contient que le formulaire.
+(function () {
+  var API = 'https://script.google.com/macros/s/AKfycbyxLePPwFfxDJ5-QJjyDaXwPcjySVV5es0WImGmHZ-5HJxALDTg72y2sVnz78-uMrmp/exec';
+  var BOUTON = "[ s'inscrire → ]";
+  var f = document.getElementById('formulaire'), b = document.getElementById('bouton');
+  var msg = document.getElementById('msg'), icone = document.getElementById('msg-icone'), texte = document.getElementById('msg-texte');
+  function champ(id) { return document.getElementById(id).value.trim(); }
+
+  // Affiche un message. « morceaux » mélange du texte et des passages en gras : ['Envoyé à ', { gras: 'x@y.fr' }, '.']
+  function dire(type, morceaux, garderFormulaire) {
+    var signe = { ok: ['✓', 'var(--accent)'], attente: ['⏳', 'var(--alerte)'], ko: ['✗', 'var(--erreur)'] }[type];
+    msg.className = 'message ' + type;
+    icone.textContent = signe[0]; icone.style.color = signe[1];
+    texte.textContent = '';
+    morceaux.forEach(function (m) {
+      if (typeof m === 'string') { texte.appendChild(document.createTextNode(m)); return; }
+      var g = document.createElement('b'); g.textContent = m.gras; texte.appendChild(g);
+    });
+    msg.hidden = false;
+    f.hidden = !garderFormulaire;
+  }
+  function erreur(t, idChamp) { dire('ko', [t], true); if (idChamp) document.getElementById(idChamp).focus(); }
+
+  f.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var d = { nom: champ('nom'), prenom: champ('prenom'), societe: champ('societe'), email: champ('email'), site: champ('site') };
+    if (!d.nom) return erreur('Il manque ton nom.', 'nom');
+    if (!d.prenom) return erreur('Il manque ton prénom.', 'prenom');
+    if (!/^[^@\s<>]+@[^@\s<>]+\.[a-z]{2,}$/i.test(d.email)) return erreur('Cette adresse e-mail ne semble pas complète. Vérifie-la et réessaie.', 'email');
+
+    b.disabled = true; b.textContent = '[ envoi… ]'; msg.hidden = true;
+    var arret = window.AbortController ? new AbortController() : null;
+    var minuteur = setTimeout(function () { if (arret) arret.abort(); }, 25000);
+    // « text/plain » : le navigateur envoie la demande directement, sans vérification préalable que Google Apps Script ne sait pas traiter
+    fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d), redirect: 'follow', signal: arret ? arret.signal : undefined })
+      .then(function (r) { if (!r.ok) throw new Error('réponse ' + r.status); return r.json(); })
+      .then(function (r) {
+        var etat = r && r.etat;
+        if (etat === 'ok') dire('ok', ['Presque fini, ' + d.prenom + '. Un e-mail de confirmation vient de partir vers ', { gras: d.email }, ". Clique sur le lien qu'il contient pour valider ton inscription. S'il n'arrive pas dans deux minutes, regarde dans les indésirables."]);
+        else if (etat === 'differe') dire('ok', ['Ton inscription est enregistrée, ' + d.prenom + ". L'e-mail de confirmation partira demain matin vers ", { gras: d.email }, " : il restera un lien à cliquer pour valider."]);
+        else if (etat === 'deja') dire('ok', ["Tu es déjà inscrit avec l'adresse ", { gras: d.email }, '. Tu reçois la newsletter chaque matin.']);
+        else if (etat === 'attente') dire('attente', ["La liste est complète pour l'instant. Ton adresse ", { gras: d.email }, " est sur liste d'attente : tu recevras un e-mail dès qu'une place se libère."]);
+        else if (r && r.motif === 'adresse') erreur('Cette adresse e-mail ne semble pas complète. Vérifie-la et réessaie.', 'email');
+        else if (r && r.motif === 'nom') erreur('Il manque ton nom ou ton prénom.', 'nom');
+        else erreur("L'inscription n'a pas abouti. Réessaie dans un instant, ou écris-moi sur LinkedIn.");
+      })
+      .catch(function () { erreur("Le service ne répond pas pour l'instant. Réessaie dans un instant, ou écris-moi sur LinkedIn."); })
+      .then(function () { clearTimeout(minuteur); b.disabled = false; b.textContent = BOUTON; });
+  });
+})();
+</script>
+</body>
+</html>
