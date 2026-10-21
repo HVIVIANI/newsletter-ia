@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Veille IA — l'actualité de l'IA triée chaque matin, par Hugo Viviani</title>
-<meta name="description" content="Chaque matin, environ 340 articles scannés pour n'en garder que 5. Une newsletter gratuite conçue et opérée par Hugo Viviani.">
+<title>Veille IA — IA, robotique et deeptech, triées chaque matin, par Hugo Viviani</title>
+<meta name="description" content="Chaque matin, des centaines d'articles sur l'IA, la robotique et la deeptech scannés pour ne garder que les signaux forts. Tu choisis tes rubriques. Une newsletter gratuite conçue et opérée par Hugo Viviani.">
 <meta name="color-scheme" content="dark">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://hviviani.github.io/newsletter-ia/">
-<meta property="og:title" content="Veille IA — l'actualité de l'IA, triée chaque matin">
+<meta property="og:title" content="Veille IA — IA, robotique et deeptech, triées chaque matin">
 <meta property="og:description" content="Environ 340 articles scannés chaque jour, 5 signaux retenus. Une newsletter gratuite conçue et opérée par Hugo Viviani.">
 <meta property="og:image" content="https://hviviani.github.io/newsletter-ia/apercu.png">
 <meta property="og:image:width" content="1200">
@@ -67,6 +67,12 @@
   button:hover { background: #4ae168; }
   button[disabled] { opacity: .6; cursor: default; }
   .promesse { font-family: var(--mono); font-size: 12px; color: var(--doux); margin: 10px 0 0; }
+  fieldset { border: 0; margin: 12px 0 0; padding: 0; min-width: 0; }
+  legend { font-family: var(--mono); font-size: 12px; color: var(--doux); margin-bottom: 6px; padding: 0; }
+  .rubrique { display: flex; gap: 11px; align-items: flex-start; padding: 10px 12px; margin-top: 6px; background: var(--carte); border: 1px solid var(--bord-fort); border-radius: 6px; cursor: pointer; font-family: var(--sans); font-size: 15px; color: var(--texte); }
+  .rubrique input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--accent); flex: none; }
+  .rubrique b { display: block; font-weight: 650; }
+  .rubrique span { display: block; font-size: 13px; color: var(--doux); }
   .piege { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
   .message { font-size: 15px; line-height: 1.55; margin: 14px 0 0; padding: 12px 14px; border-radius: 6px; border: 1px solid; }
   .message.ok { background: #0f2a19; border-color: #39d35355; }
@@ -101,7 +107,7 @@
 <main>
   <div class="shell">hugo@viviani:~$ ./veille-ia --subscribe</div>
   <h1>VEILLE IA<span class="curseur" aria-hidden="true">_</span></h1>
-  <p class="accroche">L'actualité de l'IA, triée chaque matin.</p>
+  <p class="accroche">L'actualité de l'IA, de la robotique et de la deeptech, triée chaque matin. Tu choisis tes rubriques.</p>
 
   <div class="chiffres" aria-label="La veille en chiffres">
     <div class="chiffre"><b>≈ 340</b><span>articles scannés par jour</span></div>
@@ -139,6 +145,12 @@
             <input type="email" id="email" name="email" placeholder="prenom@exemple.fr" autocomplete="email" inputmode="email" required>
           </div>
         </div>
+        <fieldset id="rubriques">
+          <legend>rubriques <span class="facultatif">(au moins une)</span></legend>
+          <label class="rubrique"><input type="checkbox" name="rubrique" value="IA" checked><span><b>IA</b><span>modèles, produits, business</span></span></label>
+          <label class="rubrique"><input type="checkbox" name="rubrique" value="Robotique" checked><span><b>Robotique</b><span>robots, véhicules autonomes, drones</span></span></label>
+          <label class="rubrique"><input type="checkbox" name="rubrique" value="Deeptech" checked><span><b>Deeptech</b><span>puces, datacenters, appareils, quantique</span></span></label>
+        </fieldset>
         <button type="submit" id="bouton">[ s'inscrire → ]</button>
         <div class="piege" aria-hidden="true"><label for="site">Ne pas remplir</label><input type="text" id="site" name="site" tabindex="-1" autocomplete="off"></div>
       </form>
@@ -155,7 +167,7 @@
 
 <footer>
   <p class="auteur">Conçu et opéré par <b>Hugo Viviani</b>, business developer en quête du meilleur job. <a class="mono" style="font-size:12px" href="https://www.linkedin.com/in/hugo-viviani-a4b298228/">LinkedIn ↗</a></p>
-  <p class="mentions">Ton nom, ton prénom, ta société et ton adresse e-mail sont conservés par Hugo Viviani dans un fichier privé, pour t'envoyer cette newsletter et savoir qui la lit. Ils ne sont transmis à personne. Tu peux te désinscrire à tout moment avec le lien présent en bas de chaque e-mail, ou demander leur suppression par message LinkedIn.</p>
+  <p class="mentions">Ton nom, ton prénom, ta société, ton adresse e-mail et tes rubriques sont conservés par Hugo Viviani dans un fichier privé, pour t'envoyer cette newsletter et savoir qui la lit. Ils ne sont transmis à personne. Tu peux te désinscrire à tout moment avec le lien présent en bas de chaque e-mail, ou demander leur suppression par message LinkedIn.</p>
 </footer>
 
 <script>
@@ -185,10 +197,12 @@
 
   f.addEventListener('submit', function (ev) {
     ev.preventDefault();
-    var d = { nom: champ('nom'), prenom: champ('prenom'), societe: champ('societe'), email: champ('email'), site: champ('site') };
+    var rubriques = [].slice.call(document.querySelectorAll('input[name=rubrique]')).filter(function (c) { return c.checked; }).map(function (c) { return c.value; });
+    var d = { nom: champ('nom'), prenom: champ('prenom'), societe: champ('societe'), email: champ('email'), site: champ('site'), rubriques: rubriques };
     if (!d.nom) return erreur('Il manque ton nom.', 'nom');
     if (!d.prenom) return erreur('Il manque ton prénom.', 'prenom');
     if (!/^[^@\s<>]+@[^@\s<>]+\.[a-z]{2,}$/i.test(d.email)) return erreur('Cette adresse e-mail ne semble pas complète. Vérifie-la et réessaie.', 'email');
+    if (!rubriques.length) return erreur('Coche au moins une rubrique.');
 
     b.disabled = true; b.textContent = '[ envoi… ]'; msg.hidden = true;
     var arret = window.AbortController ? new AbortController() : null;
@@ -204,6 +218,7 @@
         else if (etat === 'attente') dire('attente', ["La liste est complète pour l'instant. Ton adresse ", { gras: d.email }, " est sur liste d'attente : tu recevras un e-mail dès qu'une place se libère."]);
         else if (r && r.motif === 'adresse') erreur('Cette adresse e-mail ne semble pas complète. Vérifie-la et réessaie.', 'email');
         else if (r && r.motif === 'nom') erreur('Il manque ton nom ou ton prénom.', 'nom');
+        else if (r && r.motif === 'rubriques') erreur('Coche au moins une rubrique.');
         else erreur("L'inscription n'a pas abouti. Réessaie dans un instant, ou écris-moi sur LinkedIn.");
       })
       .catch(function () { erreur("Le service ne répond pas pour l'instant. Réessaie dans un instant, ou écris-moi sur LinkedIn."); })
