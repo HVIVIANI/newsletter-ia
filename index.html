@@ -54,13 +54,18 @@
   /* Boîte rétro : bordure d'encre et ombre pleine décalée */
   .boite { background: var(--carte); border: 2px solid var(--encre); box-shadow: 5px 5px 0 var(--encre); }
 
-  /* Fiche d'expérience : les chiffres */
-  .fiche { display: grid; grid-template-columns: repeat(3, 1fr); margin: 26px 0 0; }
-  .fiche > div { padding: 13px 14px; }
-  .fiche > div + div { border-left: 2px solid var(--encre); }
-  .fiche > div:last-child { background: var(--bleu-t); }
-  .fiche b { display: block; font-family: var(--mono); font-size: 24px; font-weight: 700; white-space: nowrap; }
-  .fiche span { display: block; font-family: var(--mono); font-size: 10px; color: var(--doux); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+  /* Fiche d'expérience : les chiffres de la dernière édition, comme en haut de la newsletter */
+  .fiche { margin: 26px 0 0; }
+  .cases { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .cases > div { padding: 13px 14px; }
+  .cases > div + div { border-left: 2px solid var(--encre); }
+  .cases > div:last-child { background: var(--bleu-t); }
+  .cases b { display: block; font-family: var(--mono); font-size: 26px; font-weight: 700; white-space: nowrap; }
+  .cases span { display: block; font-family: var(--mono); font-size: 10px; color: var(--doux); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+  .barre { display: flex; align-items: center; gap: 12px; border-top: 2px solid var(--encre); padding: 9px 14px; font-family: var(--mono); font-size: 11px; color: var(--doux); white-space: nowrap; }
+  .jauge { flex: 1; height: 9px; border: 1.5px solid var(--encre); background: var(--fond); }
+  .jauge i { display: block; height: 100%; background: var(--accent); }
+  .note-fiche { font-family: var(--mono); font-size: 11px; color: var(--doux); margin: 10px 0 0; }
 
   /* Les 3 rubriques */
   .etiquette { font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px; color: var(--accent); text-transform: uppercase; }
@@ -119,9 +124,10 @@
     .champs { flex-direction: column; gap: 12px; }
     .rubs, .choix { grid-template-columns: 1fr; }
     .rubs { gap: 10px; }
-    .fiche b { font-size: 18px; }
-    .fiche > div { padding: 11px 9px; }
-    .fiche span { font-size: 9px; letter-spacing: .5px; }
+    .cases b { font-size: 19px; }
+    .cases > div { padding: 11px 9px; }
+    .cases span { font-size: 9px; letter-spacing: .5px; }
+    .barre { padding: 8px 10px; gap: 8px; }
     .inscription { padding: 16px 14px 18px; }
     footer { padding: 18px 16px 28px; }
   }
@@ -136,11 +142,19 @@
   <p class="par">Par <b>Hugo Viviani</b> · <a class="mono" href="https://www.linkedin.com/in/hugo-viviani-a4b298228/">LinkedIn ↗</a></p>
   <hr class="trait">
 
-  <div class="fiche boite" aria-label="La veille en chiffres">
-    <div><b>78</b><span>sources lues chaque matin</span></div>
-    <div><b>3</b><span>rubriques au choix</span></div>
-    <div><b>5 max</b><span>signaux par rubrique</span></div>
+  <div class="fiche boite" aria-label="La dernière édition en chiffres">
+    <div class="cases">
+      <div><b id="f-articles">600</b><span>articles scannés</span></div>
+      <div><b id="f-signaux">9</b><span>signaux retenus</span></div>
+      <div><b id="f-minutes">≈50 min</b><span>gagnées ce matin</span></div>
+    </div>
+    <div class="barre">
+      <span id="f-abonnes">abonnés 8 / 100</span>
+      <div class="jauge" aria-hidden="true"><i id="f-jauge" style="width:8%"></i></div>
+      <span id="f-note">★ 4,9/5</span>
+    </div>
   </div>
+  <p class="note-fiche" id="f-date">// chiffres de la dernière édition</p>
 
   <div class="radar">~/radar <span>·</span> en bonus, pour tout le monde : le meilleur de GitHub, Hugging Face et Product Hunt.</div>
 
@@ -200,6 +214,29 @@
 </footer>
 
 <script>
+// Chiffres de la dernière édition, lus dans les données publiques du script (aucune adresse e-mail dedans).
+// Si le service ne répond pas, la page garde les chiffres écrits ci-dessus.
+(function () {
+  var API = 'https://script.google.com/macros/s/AKfycbyxLePPwFfxDJ5-QJjyDaXwPcjySVV5es0WImGmHZ-5HJxALDTg72y2sVnz78-uMrmp/exec?p=json';
+  function mettre(id, t) { var e = document.getElementById(id); if (e && t) e.textContent = t; }
+  fetch(API).then(function (r) { return r.json(); }).then(function (j) {
+    var d = j && j.digests && j.digests[0];
+    if (d && d.nbItems) {
+      var n = Number(d.nbItems), nb = (d.sujets || []).length;
+      mettre('f-articles', n.toLocaleString('fr-FR'));
+      mettre('f-signaux', String(nb));
+      mettre('f-minutes', '≈' + Math.max(5, Math.round(n * 5 / 60 / 5) * 5) + ' min');
+      if (d.date) mettre('f-date', '// chiffres de l\'édition du ' + d.date);
+    }
+    var abo = Number(j && j.abonnes), obj = Number(j && j.objectif);
+    if (abo > 0) {
+      mettre('f-abonnes', 'abonnés ' + abo + (obj > abo ? ' / ' + obj : ''));
+      document.getElementById('f-jauge').style.width = (obj > abo ? Math.max(2, Math.round(abo / obj * 100)) : 100) + '%';
+    }
+    if (j && j.note && j.note.nb) mettre('f-note', '★ ' + Number(j.note.moy).toFixed(1).replace('.', ',') + '/5');
+  }).catch(function () {});
+})();
+
 // Envoi du formulaire au script Google Apps Script, qui tient la liste des abonnés dans un Google Sheet privé.
 // Rien n'est stocké ici : cette page ne contient que le formulaire.
 (function () {
