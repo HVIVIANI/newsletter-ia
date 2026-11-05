@@ -97,6 +97,8 @@
   .rubrique input { width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--encre); flex: none; }
   .rubrique b { display: block; font-family: var(--serif); font-size: 17px; }
   .rubrique span span { display: block; font-size: 12px; line-height: 1.35; color: var(--doux); margin-top: 2px; }
+  .choix.deux { grid-template-columns: repeat(2, 1fr); }
+  .rubrique.ed:has(input:checked) { background: var(--bleu-t); }
   .rubrique.ia:has(input:checked) { background: var(--ia-t); } .rubrique.ro:has(input:checked) { background: var(--ro-t); } .rubrique.de:has(input:checked) { background: var(--de-t); }
   button { width: 100%; margin-top: 16px; background: var(--accent); color: #ffffff; border: 2px solid var(--encre); box-shadow: 4px 4px 0 var(--encre); border-radius: 0; padding: 13px 16px; font-family: var(--mono); font-size: 15px; font-weight: 700; letter-spacing: .5px; cursor: pointer; }
   button:hover { background: #174f86; }
@@ -138,7 +140,7 @@
 <main>
   <div class="haut"><span>~/veille-ia · LABO</span><span>CHAQUE MATIN · 08:00</span></div>
   <h1>Veille IA<span class="curseur" aria-hidden="true">_</span></h1>
-  <p class="accroche">L'actualité de l'IA, de la robotique et de la deeptech, triée chaque matin. Seulement les signaux forts. Tu choisis tes rubriques.</p>
+  <p class="accroche">L'actualité de l'IA, de la robotique et de la deeptech, triée chaque matin de la semaine. Seulement les signaux forts. Tu choisis tes rubriques et ton édition.</p>
   <p class="par">Par <b>Hugo Viviani</b> · <a class="mono" href="https://www.linkedin.com/in/hugo-viviani-a4b298228/">LinkedIn ↗</a></p>
   <hr class="trait">
 
@@ -161,7 +163,7 @@
   <section class="inscription boite" aria-labelledby="titre-inscription">
     <div class="etiquette">$ ./inscription --veille-ia</div>
     <h2 id="titre-inscription">Reçois la veille demain matin</h2>
-    <p class="promesse-haut">gratuit · vers 8 h · désinscription en un clic</p>
+    <p class="promesse-haut">gratuit · vers 7 h · rien le week-end · désinscription en un clic</p>
 
     <form id="formulaire" novalidate>
       <div class="champs">
@@ -194,6 +196,13 @@
           <label class="rubrique de"><input type="checkbox" name="rubrique" value="Deeptech" checked><span><b>Deeptech</b><span>puces, datacenters, appareils, quantique</span></span></label>
         </div>
       </fieldset>
+      <fieldset id="editions">
+        <legend>ton édition <span class="facultatif">(au moins une)</span></legend>
+        <div class="choix deux">
+          <label class="rubrique ed"><input type="checkbox" name="edition" value="hebdo" checked><span><b>Hebdo</b><span>le lundi : les sujets de la semaine retenus par Hugo + le flash du week-end</span></span></label>
+          <label class="rubrique ed"><input type="checkbox" name="edition" value="quotidien"><span><b>Quotidien</b><span>le flash du mardi au vendredi (avec l'édition du lundi)</span></span></label>
+        </div>
+      </fieldset>
       <button type="submit" id="bouton">S'inscrire →</button>
       <div class="piege" aria-hidden="true"><label for="site">Ne pas remplir</label><input type="text" id="site" name="site" tabindex="-1" autocomplete="off"></div>
     </form>
@@ -209,8 +218,8 @@
 
 <footer>
   <p class="auteur">Conçu et opéré par <b>Hugo Viviani</b>, business developer en quête du meilleur job. <a class="mono" style="font-size:12px" href="https://www.linkedin.com/in/hugo-viviani-a4b298228/">LinkedIn ↗</a></p>
-  <p class="pipeline">pipeline: rss(78) → gemini → email · cron 08:00 Paris · coût 0 €</p>
-  <p class="mentions">Ton nom, ton prénom, ta société, ton adresse e-mail et tes rubriques sont conservés par Hugo Viviani dans un fichier privé, pour t'envoyer cette newsletter et savoir qui la lit. Ils ne sont transmis à personne. Tu peux te désinscrire à tout moment avec le lien présent en bas de chaque e-mail, ou demander leur suppression par message LinkedIn.</p>
+  <p class="pipeline">pipeline: rss(78) → gemini → email · cron 07:00 Paris · coût 0 €</p>
+  <p class="mentions">Ton nom, ton prénom, ta société, ton adresse e-mail, tes rubriques et ton édition sont conservés par Hugo Viviani dans un fichier privé, pour t'envoyer cette newsletter et savoir qui la lit. Ils ne sont transmis à personne. Tu peux te désinscrire à tout moment avec le lien présent en bas de chaque e-mail, ou demander leur suppression par message LinkedIn.</p>
 </footer>
 
 <script>
@@ -264,11 +273,14 @@
   f.addEventListener('submit', function (ev) {
     ev.preventDefault();
     var rubriques = [].slice.call(document.querySelectorAll('input[name=rubrique]')).filter(function (c) { return c.checked; }).map(function (c) { return c.value; });
-    var d = { nom: champ('nom'), prenom: champ('prenom'), societe: champ('societe'), email: champ('email'), site: champ('site'), rubriques: rubriques };
+    var editions = [].slice.call(document.querySelectorAll('input[name=edition]')).filter(function (c) { return c.checked; }).map(function (c) { return c.value; });
+    var d = { nom: champ('nom'), prenom: champ('prenom'), societe: champ('societe'), email: champ('email'), site: champ('site'), rubriques: rubriques,
+      formule: editions.indexOf('quotidien') >= 0 ? 'quotidien' : 'hebdo' };
     if (!d.nom) return erreur('Il manque ton nom.', 'nom');
     if (!d.prenom) return erreur('Il manque ton prénom.', 'prenom');
     if (!/^[^@\s<>]+@[^@\s<>]+\.[a-z]{2,}$/i.test(d.email)) return erreur('Cette adresse e-mail ne semble pas complète. Vérifie-la et réessaie.', 'email');
     if (!rubriques.length) return erreur('Coche au moins une rubrique.');
+    if (!editions.length) return erreur('Coche au moins une édition : Hebdo, Quotidien, ou les deux.');
 
     b.disabled = true; b.textContent = 'Envoi…'; msg.hidden = true;
     var arret = window.AbortController ? new AbortController() : null;
@@ -280,7 +292,7 @@
         var etat = r && r.etat;
         if (etat === 'ok') dire('ok', ['Confirme ton adresse e-mail.']);
         else if (etat === 'differe') dire('ok', ["C'est noté, " + d.prenom + ". L'e-mail de confirmation partira demain matin vers ", { gras: d.email }, '.']);
-        else if (etat === 'deja') dire('ok', ["Tu es déjà inscrit avec l'adresse ", { gras: d.email }, '. Tu reçois la newsletter chaque matin.']);
+        else if (etat === 'deja') dire('ok', ["Tu es déjà inscrit avec l'adresse ", { gras: d.email }, '. Tu reçois déjà la newsletter.']);
         else if (etat === 'attente') dire('attente', ["La liste est complète pour l'instant. Ton adresse ", { gras: d.email }, " est sur liste d'attente : tu recevras un e-mail dès qu'une place se libère."]);
         else if (r && r.motif === 'adresse') erreur('Cette adresse e-mail ne semble pas complète. Vérifie-la et réessaie.', 'email');
         else if (r && r.motif === 'nom') erreur('Il manque ton nom ou ton prénom.', 'nom');
